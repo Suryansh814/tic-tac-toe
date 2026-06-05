@@ -1,5 +1,8 @@
 import random
 
+from ai import SmartAI
+from ui import *
+from scoreboard import ScoreBoard
 class TicTacToe:
 
     def __init__(
@@ -103,18 +106,11 @@ class TicTacToe:
     # BOT MOVE
     # =====================
 
-    def bot_move(self):
+ def bot_move(self):
 
-        free = []
+    move = SmartAI.get_move(self.board)
 
-        for i in range(9):
-
-            if self.board[i] not in ["X", "O"]:
-                free.append(i)
-
-        move = random.choice(free)
-
-        self.board[move] = "O"
+    self.board[move] = "O"
 
     # =====================
     # START
