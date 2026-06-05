@@ -1,8 +1,7 @@
-import random
-
 from ai import SmartAI
 from ui import *
 from scoreboard import ScoreBoard
+
 class TicTacToe:
 
     def __init__(
@@ -17,6 +16,16 @@ class TicTacToe:
         self.player1 = player1
         self.player2 = player2
 
+        self.scoreboard = ScoreBoard()
+
+        self.reset_board()
+
+    # ======================
+    # RESET BOARD
+    # ======================
+
+    def reset_board(self):
+
         self.board = [
             "1","2","3",
             "4","5","6",
@@ -25,25 +34,9 @@ class TicTacToe:
 
         self.current = "X"
 
-    # =====================
-    # BOARD
-    # =====================
-
-    def show_board(self):
-
-        print()
-
-        print(f" {self.board[0]} | {self.board[1]} | {self.board[2]} ")
-        print("---+---+---")
-        print(f" {self.board[3]} | {self.board[4]} | {self.board[5]} ")
-        print("---+---+---")
-        print(f" {self.board[6]} | {self.board[7]} | {self.board[8]} ")
-
-        print()
-
-    # =====================
+    # ======================
     # WIN CHECK
-    # =====================
+    # ======================
 
     def check_win(self):
 
@@ -72,22 +65,22 @@ class TicTacToe:
 
         return False
 
-    # =====================
-    # DRAW
-    # =====================
+    # ======================
+    # DRAW CHECK
+    # ======================
 
     def check_draw(self):
 
         for cell in self.board:
 
-            if cell not in ["X", "O"]:
+            if cell not in ["X","O"]:
                 return False
 
         return True
 
-    # =====================
-    # MOVE
-    # =====================
+    # ======================
+    # PLAYER MOVE
+    # ======================
 
     def make_move(self, pos):
 
@@ -96,31 +89,50 @@ class TicTacToe:
         if pos < 0 or pos > 8:
             return False
 
-        if self.board[pos] in ["X", "O"]:
+        if self.board[pos] in ["X","O"]:
             return False
 
         self.board[pos] = self.current
+
         return True
 
-    # =====================
+    # ======================
     # BOT MOVE
-    # =====================
+    # ======================
 
- def bot_move(self):
+    def bot_move(self):
 
-    move = SmartAI.get_move(self.board)
+        move = SmartAI.get_move(self.board)
 
-    self.board[move] = "O"
+        self.board[move] = "O"
 
-    # =====================
-    # START
-    # =====================
+    # ======================
+    # SHOW UI
+    # ======================
 
-    def start(self):
+    def show_ui(self):
+
+        clear()
+        banner()
+
+        self.scoreboard.display(
+            self.player1,
+            self.player2
+        )
+
+        draw_board(self.board)
+
+    # ======================
+    # SINGLE MATCH
+    # ======================
+
+    def play_match(self):
 
         while True:
 
-            self.show_board()
+            self.show_ui()
+
+            # PLAYER X
 
             if self.current == "X":
 
@@ -129,30 +141,33 @@ class TicTacToe:
                 )
 
                 if not move.isdigit():
-                    print("Invalid Input")
                     continue
 
                 if not self.make_move(int(move)):
-                    print("Invalid Move")
                     continue
 
                 if self.check_win():
 
-                    self.show_board()
+                    self.show_ui()
 
                     print(
-                        f"{self.player1} Wins!"
+                        f"\n🏆 {self.player1} Wins!"
                     )
-                    break
+
+                    self.scoreboard.player1_win()
+
+                    return
 
                 self.current = "O"
+
+            # PLAYER O / BOT
 
             else:
 
                 if self.mode == "single":
 
                     print(
-                        f"{self.player2} is thinking..."
+                        f"\n{self.player2} Thinking..."
                     )
 
                     self.bot_move()
@@ -164,29 +179,61 @@ class TicTacToe:
                     )
 
                     if not move.isdigit():
-                        print("Invalid Input")
                         continue
 
                     if not self.make_move(int(move)):
-                        print("Invalid Move")
                         continue
 
                 if self.check_win():
 
-                    self.show_board()
+                    self.show_ui()
 
                     print(
-                        f"{self.player2} Wins!"
+                        f"\n🏆 {self.player2} Wins!"
                     )
-                    break
+
+                    self.scoreboard.player2_win()
+
+                    return
 
                 self.current = "X"
 
             if self.check_draw():
 
-                self.show_board()
+                self.show_ui()
 
-                print("Match Draw!")
+                print("\n🤝 Match Draw!")
+
+                return
+
+    # ======================
+    # START GAME
+    # ======================
+
+    def start(self):
+
+        while True:
+
+            self.reset_board()
+
+            self.play_match()
+
+            print()
+            again = input(
+                "Play Again? (y/n): "
+            ).lower()
+
+            if again != "y":
+
+                clear()
+
+                print(
+                    "\nThanks For Playing ❤️"
+                )
+
+                print(
+                    f"\nAuthor : azod08\n"
+                )
 
                 break
 
